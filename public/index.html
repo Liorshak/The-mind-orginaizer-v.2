@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Organizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="css/domarrow.css">
+    <link rel="stylesheet" href="css/style.css">
+   
+
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="navBar">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#main"><img src="images/lightblub.gif"> The Mind Organizer</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" href="#brainForm">Brainstorm</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="#organizer">Lists</a>
+              </li>
+              <li class="nav-item" onClick="displayLogin()">
+                <a class="nav-link active" href="#subjectForm" >Login</a>
+              </li>
+              <li class="nav-item" onClick="displayRegister()">
+                <a class="nav-link active" href="#subjectForm"  >Register</a>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="paraImage" id="subjectHead">
+        <h1 id="headTitle">The Mind Organizer</h1>
+        
+        <h2>Whats your subject of thinking?</h2>
+        <form action=""id="subjectForm">
+          
+            <input type="text" name="subject" id="inputSubject" placeholder="Subject">
+            <input type=submit value ="Set" id="setSubject">
+        </form>
+
+      </div>
+
+</header>
+
+
+<section id="registerLogin">
+  
+  <div id=loginDiv>
+  <div>
+      <form id="login" method="post">
+          <h2>Login</h2>
+
+              Username:<br> <input type="username" name="username" placeholder="username" id="usernameL" onchange="successLogin()"><br>
+             Password:<br> <input type="text" name="password" placeholder="password" id="passwordL" onchange="successLogin()"><br>
+             <br><input type=submit id="submitLogin" value="Login" disabled onclick="login(event)"><br>
+             <div id="login_info"></div> 
+             
+          </form>
+          
+             <button id="needToRegi"  onclick="switchForm()"> Need to signed up? </button>
+          
+  </div>
+  <div>
+      <form id="register" method="post" >
+          <h2>Register</h2>
+          First Name:<br><input type="text" name="name" placeholder="write your first name" id="name" onchange="successRegi()"><br>
+           Last Name:<br><input type="text" name="lName" placeholder="write your last name" id="lName" onchange="successRegi()"><br>
+           Email:<br><input type="email" name="email" placeholder="your email" id="email" onchange="successRegi()"><br>
+          Username: <br><input type="username" name="username" placeholder="create a username" id="username" onchange="successRegi()"><br>
+           Password: <br><input type="text" name="password" placeholder="create a new password" id="password" onchange="successRegi()"><br>
+           <br><input type=submit id="submitRegi" value="Register" disabled onclick="register(event)"><br>
+          <div id="register_info"></div>
+          
+          <!--          -->
+
+          </form>
+        
+          <button id="needTologi" onclick="switchForm()">Already signed up?</button>
+       
+  </div>
+</div>
+</section>
+
+
+
+    <section class="main" id="main">
+
+
+<!-- page 1 -->
+       
+        
+
+       <form id="brainForm">
+        <input type="text" id="inputItem" placeholder="Whats on your mind?">
+        <input type="submit" id="addBtn" value="Add">
+       </form>
+     
+        <!-- part 2: dragable area id="dragArea"-->
+
+
+
+       <section id="dragArea">
+       <!-- part 2: draggable area id="dragArea"-->
+
+            
+            <a href="#organizer" id="arrowPageDown"><i class="fas fa-angle-double-down"></i></a>
+           
+       </section>
+<!-- end of page 1 -->
+<!-- page 2 -->
+       <section id="organizer">
+            <a href="#main" id="arrowPageUp"><i class="fas fa-angle-double-up"></i></a>
+ 
+        <div id="TaskOrganizer">
+            <div id="toDos">
+                <h1>ToDo-List</h1>
+                <div id="toDosList"></div>
+                <button id="exportToDoBtn" type="button">Export</button>
+            </div>   
+            
+            <div id="toProcess">
+                <h1>To-Process-List</h1>
+                <div id="toProcessList"></div>
+                <button id="exportProcessBtn" type="button">Export</button>
+            </div>
+        </div>
+       </section>
+
+<!-- end of page 2 -->
+    </section>
+    <footer id=footer class="fixed-bottom">
+        <div><strong>"Made for the best by the best!" &copy; The Minders:</strong></div>
+        <div><img src="images/Developers.gif")>Lior Shaked:<a href="mailto:Liorshak@gmail.com"> Contact Me</a></div>  
+            <div><img src="images/Developers.gif")>Henry Trejgier:<a href="mailto:htrejgier@gmail.com"> Contact Me</a></div> 
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  
+    <script src="js/script.js"></script>
+    <script src="js/domarrow.js"></script>
+    <script src="js/main.js"></script>
+
+ 
+
+</body>
+</html>
