@@ -18,12 +18,38 @@ color:white;
     padding: 5px;
 }
 
+.navbar-nav{
+    display:flex;
+}
+#signupNav .nav-item{
+    display:inline-block;
+  
+}
+
+#signupNav .nav-link{
+    text-decoration: none ;
+    color:white;
+}
+
+#containDrag{
+    position:unset;
+}
 #register ,#login, #needTologi, #needToRegi{
+ 
     display:none;
-    margin:30px auto;
+    margin:0px auto;
     text-align:center;
    
 }
+
+#register ,#login{
+    padding-top: 3vh;
+}
+
+#needTologi, #needToRegi{
+    margin-bottom: 2vh;
+}
+
 
 #loginDiv input {
     border-radius: 5px;
@@ -35,7 +61,7 @@ color:white;
     }
 
 
-#needTologi, #needToRegi{
+#needTologi, #needToRegi, #save,  #save2{
     border:1px solid rgb(255,208,70);
     border-radius: 10px;
     background:transparent;
@@ -44,13 +70,12 @@ color:white;
     transition: all 1s;
 }
 
-#needTologi:hover, #needToRegi:hover{
+#needTologi:hover, #needToRegi:hover ,#save:hover,  #save2:hover{
     background:rgb(255,208,70);
     color:white;
 }
 
 #loginDiv {
-    margin:5vh;
     display:flex;
     justify-content: space-evenly;
 }
@@ -60,14 +85,36 @@ color:white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 99.9%;
+    width: 100%;
     height: 200vh;
     padding:5vh;
+    
     
     /* justify-content: space-around; */
 }
 
-#brainForm , #subjectForm{
+#save,  #save2 {
+    border:none;
+    font-size: 1.5em;
+    
+    } 
+
+    #save2{
+        display:block;
+        margin: 10px auto 10px auto;
+        padding-bottom: 4.5vh;
+        border:1px solid white;
+        border-bottom: none;
+        position:fixed;
+        bottom: 0;
+        left:0;
+    }
+
+#save,   #brainForm{
+    display: inline-block;
+}
+
+#brainForm , #subjectForm {
     background:white;
     border-radius: 5px;
     padding: 2px 10px;
@@ -78,7 +125,7 @@ h2{
     /* margin-bottom:30px; */
 }
 
-#subjectForm input,#brainForm input{
+#subjectForm input,#brainForm input, #friendEmail{
     
     border:0px;
     font-size: 1.5em;
@@ -124,7 +171,7 @@ h2{
    
     min-height: 600px;
   
-    width:99.9vw;
+    width:100%;
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -144,15 +191,34 @@ h2{
     margin-top: 20px;
     border-top: 3px solid rgba(255, 255, 255, 0.397);
     border-bottom: 3px solid rgba(255, 255, 255, 0.397);
-    width: 100%;
+    width:99vw;
     height: 78vh;
     text-align:center;
     display:flex;
     flex-direction:column;
     align-items: center;
+    position: relative;
     justify-content:space-between;
         
 }
+#friendDiv{
+    border-bottom: 3px solid rgba(255, 255, 255, 0.397);
+}
+
+#friendEmail{
+    width:33%;
+}
+
+#friendList span{
+    display: inline-block;
+   margin-top: 10px;
+    color:rgb(255,208,70);
+    font-weight:bold;
+    font-size:1.5em;
+    margin-right: 10px;
+    
+}
+
 
 #arrowPageDown {
     font-size:2em;
@@ -171,7 +237,9 @@ h2{
     display:block;
 }
 
-
+.hidden {
+    display:none;
+}
 
 
 .checkInput{
@@ -421,6 +489,7 @@ margin-left: 5px;
 } 
 
 #TaskOrganizer{
+ 
     display:flex;
     justify-content:space-between;
 
@@ -496,9 +565,20 @@ margin-left: 5px;
         font-size:15px;
         height: 75px;
     }
-    #footer img{
+    #footer img {
         height:20px;
         width:20px;
+    }
+    #save {
+        margin: 0px auto 20px !important;
+
+        display:block;
+    }
+    #save2 {
+       
+        padding-bottom: 12vh;
+
+
     }
 }
 

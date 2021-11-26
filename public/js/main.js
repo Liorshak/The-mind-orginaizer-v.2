@@ -43,12 +43,11 @@ let exportToDoBtn = document.getElementById("exportToDoBtn");
 //initial listeners
 brainForm.addEventListener("submit", createBubble);
 subjectForm.addEventListener("submit", maintainSubject);
-exportProcessBtn.addEventListener("click", clickExportProcess);
-exportToDoBtn.addEventListener("click", clickExportToDo);
 
 let subjectFlag = false;
 function maintainSubject(event) {
   event.preventDefault();
+  console.log(subjectFlag);
   audioAdd.play();
   if (!subjectFlag) {
     createSubject();
@@ -59,6 +58,7 @@ function maintainSubject(event) {
 }
 
 function createSubject() {
+  console.log(inputSubject.value);
   let newSubject = document.createElement("div");
   let newSubTxt = document.createTextNode(inputSubject.value);
   newSubject.appendChild(newSubTxt);
@@ -109,8 +109,10 @@ function createBubble(event) {
   // make draggable true attribute
   // newBubble.setAttribute("draggable", "true");
   // newBubble.style.position = "absolute";
-  // randomX = Math.floor(Math.random * 400);
-  // randomY = Math.floor(Math.random * 700);
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  let randomX = Math.floor(Math.random() * w * 0.6);
+  let randomY = Math.floor(Math.random() * h * 0.78 * 0.75);
 
   //make style position x random
   // make style position y random
@@ -135,8 +137,10 @@ function createBubble(event) {
   newBubble.addEventListener("mousemove", bubbleMouseMove);
   // newBubble.addEventListener("touchmove", bubbleMouseMove);
 
+  //rapper for position
   newBubble.classList.add("thought");
-
+  newBubble.style.top = `${randomY}px`;
+  newBubble.style.left = `${randomX}px`;
   dragArea.appendChild(newBubble);
 
   inputItem.value = "";
@@ -210,7 +214,7 @@ function endDrag(event) {
   let _y = event.clientY;
   event.target.style.left = _x + "px";
   event.target.style.top = _y + "px";
-  event.target.style.position = "absolute";
+  // event.target.style.position = "absolute";
 }
 
 function isEmpty(str) {
@@ -293,9 +297,11 @@ function addToList(id, divList) {
   addCheckBtn(divContainer, "checkInputList");
   divContainer.appendChild(txtNode);
   let radios = addRadio(divContainer, "radiosInList", id, "kind1");
-  if (divList=="toDosList") {
+  if (divList == "toDosList") {
     radios[0].checked = true;
-  } else {radios[1].checked = true}
+  } else {
+    radios[1].checked = true;
+  }
   divEleToAdd.appendChild(divContainer);
 }
 
@@ -438,71 +444,81 @@ function removeArrow(event) {
   //need to remove connection from array
 }
 
-function exportToCsv(filename, rows) {
-  let processRow = function (row) {
-    let finalVal = "";
-    for (let j = 0; j < row.length; j++) {
-      let innerValue = row[j] === null ? "" : row[j].toString();
-      if (row[j] instanceof Date) {
-        innerValue = row[j].toLocaleString();
-      }
-      let result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ",";
-      finalVal += result;
-    }
-    return finalVal + "\n";
-  };
+// function exportToCsv(filename, rows) {
+//   let processRow = function (row) {
+//     let finalVal = "";
+//     for (let j = 0; j < row.length; j++) {
+//       let innerValue = row[j] === null ? "" : row[j].toString();
+//       if (row[j] instanceof Date) {
+//         innerValue = row[j].toLocaleString();
+//       }
+//       let result = innerValue.replace(/"/g, '""');
+//       if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+//       if (j > 0) finalVal += ",";
+//       finalVal += result;
+//     }
+//     return finalVal + "\n";
+//   };
 
-  let csvFile = "";
-  for (let i = 0; i < rows.length; i++) {
-    csvFile += processRow(rows[i]);
-  }
+//   let csvFile = "";
+//   for (let i = 0; i < rows.length; i++) {
+//     csvFile += processRow(rows[i]);
+//   }
 
-  let blob = new Blob([csvFile], { type: "text/csv;charset=utf-8;" });
-  if (navigator.msSaveBlob) {
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    let link = document.createElement("a");
-    if (link.download !== undefined) {
-      // feature detection
-      let url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", filename);
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-}
+//   let blob = new Blob([csvFile], { type: "text/csv;charset=utf-8;" });
+//   if (navigator.msSaveBlob) {
+//     navigator.msSaveBlob(blob, filename);
+//   } else {
+//     let link = document.createElement("a");
+//     if (link.download !== undefined) {
+//       // feature detection
+//       let url = URL.createObjectURL(blob);
+//       link.setAttribute("href", url);
+//       link.setAttribute("download", filename);
+//       link.style.visibility = "hidden";
+//       document.body.appendChild(link);
+//       link.click();
+//       document.body.removeChild(link);
+//     }
+//   }
+// }
 
-function clickExportProcess() {
-  exportToCsv("export.csv", getBubbles(2));
-}
+// function clickExportProcess() {
+//   exportToCsv("export.csv", getBubbles(2));
+// }
 
-function clickExportToDo() {
-  exportToCsv("export.csv", getBubbles(1));
-}
+// function clickExportToDo() {
+//   exportToCsv("export.csv", getBubbles(1));
+// }
 
-function getBubbles(typeWanted) {
-  let arr = [["Id", "Bubble", "Type", "Connected To", "Done?"]];
-  listWanted = (typeWanted == 1) ? "toDosList" : "toProcessList";
-  divsWanted = document.querySelector("#" + listWanted).childNodes;
-  for (let divWanted of divsWanted) {
-    let objIdWanted = divWanted.getAttribute("data-objid");
-    let objWanted = findBubble(objIdWanted);
-    let txt = objWanted.text;
-    let connectedTxt = connectedToTxt(objIdWanted)
-    if (txt) { arr.push([`${objIdWanted}`, txt, listWanted, connectedTxt, objWanted.done]) }
-  }
-  return arr;
-}
+// function getBubbles(typeWanted) {
+//   let arr = [["Id", "Bubble", "Type", "Connected To", "Done?"]];
+//   listWanted = typeWanted == 1 ? "toDosList" : "toProcessList";
+//   divsWanted = document.querySelector("#" + listWanted).childNodes;
+//   for (let divWanted of divsWanted) {
+//     let objIdWanted = divWanted.getAttribute("data-objid");
+//     let objWanted = findBubble(objIdWanted);
+//     let txt = objWanted.text;
+//     let connectedTxt = connectedToTxt(objIdWanted);
+//     if (txt) {
+//       arr.push([
+//         `${objIdWanted}`,
+//         txt,
+//         listWanted,
+//         connectedTxt,
+//         objWanted.done,
+//       ]);
+//     }
+//   }
+//   return arr;
+// }
 
-function connectedToTxt(num) {
-  let str = "";
-  str = findBubble(num).connectedTo.map(objid => {
-    return findBubble(objid).text
-  }).join(",");
-  return str
-}
+// function connectedToTxt(num) {
+//   let str = "";
+//   str = findBubble(num)
+//     .connectedTo.map((objid) => {
+//       return findBubble(objid).text;
+//     })
+//     .join(",");
+//   return str;
+// }

@@ -24,21 +24,25 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <a class="navbar-brand" href="#"></a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
                 <a class="nav-link active" href="#brainForm">Brainstorm</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link active" href="#organizer">Lists</a>
               </li>
-              <li class="nav-item" onClick="displayLogin()">
+            </ul >
+              <div id="signupNav" class="d-flex justify-content-center  m-0 ">
+              <li class="nav-item"  onClick="displayLogin()">
                 <a class="nav-link active" href="#subjectForm" >Login</a>
+             
               </li>
               <li class="nav-item" onClick="displayRegister()">
-                <a class="nav-link active" href="#subjectForm"  >Register</a>
+                <a class="nav-link active" href="#subjectForm"  >Sign up</a>
               </li>
               
-            </ul>
+            </div>
           </div>
         </div>
       </nav>
@@ -77,7 +81,7 @@
   </div>
   <div>
       <form id="register" method="post" >
-          <h2>Register</h2>
+          <h2>Sign up</h2>
           First Name:<br><input type="text" name="name" placeholder="write your first name" id="name" onchange="successRegi()"><br>
            Last Name:<br><input type="text" name="lName" placeholder="write your last name" id="lName" onchange="successRegi()"><br>
            Email:<br><input type="email" name="email" placeholder="your email" id="email" onchange="successRegi()"><br>
@@ -102,25 +106,33 @@
 
 
 <!-- page 1 -->
-       
-        
+       <div class="mb-3">
+<input type="submit" class="me-5 " value="Save Work" id="save">       
 
        <form id="brainForm">
         <input type="text" id="inputItem" placeholder="Whats on your mind?">
         <input type="submit" id="addBtn" value="Add">
        </form>
-     
+      </div>    
         <!-- part 2: dragable area id="dragArea"-->
 
 
-
+<section id="containDrag">
        <section id="dragArea">
        <!-- part 2: draggable area id="dragArea"-->
-
+       <a href="#organizer" id="arrowPageDown"><i class="fas fa-angle-double-down"></i></a>
             
-            <a href="#organizer" id="arrowPageDown"><i class="fas fa-angle-double-down"></i></a>
+         
            
        </section>
+       <div id="friendDiv">
+         <h3 class="hidden" id="addFriendErrorMessage">you must be sign in to add friends</h3>
+         <div class="d-flex justify-content-evenly">
+              <input id="friendEmail" type="email" placeholder="Enter an email to add friend">
+                <ul id="friendList"><span>Your friend list:</span></ul>
+        </div>
+       </div>
+      </section> 
 <!-- end of page 1 -->
 <!-- page 2 -->
        <section id="organizer">
@@ -130,17 +142,17 @@
             <div id="toDos">
                 <h1>ToDo-List</h1>
                 <div id="toDosList"></div>
-                <button id="exportToDoBtn" type="button">Export</button>
+                
             </div>   
             
             <div id="toProcess">
                 <h1>To-Process-List</h1>
                 <div id="toProcessList"></div>
-                <button id="exportProcessBtn" type="button">Export</button>
+               
             </div>
         </div>
        </section>
-
+       <input type="submit" value="Save Work" id="save2"> 
 <!-- end of page 2 -->
     </section>
     <footer id=footer class="fixed-bottom">
