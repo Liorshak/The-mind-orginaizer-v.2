@@ -132,3 +132,9 @@ app.get("/subjects/:user_id", (req, res) => {
     })
     .catch((err) => "error in loading subjects");
 });
+
+app.get("/tasks/:subject_id", (req, res) => {
+  db.getAllTasks(req.params.subject_id)
+    .then((data) => res.json(data))
+    .catch((err) => "error in loading subjects");
+});

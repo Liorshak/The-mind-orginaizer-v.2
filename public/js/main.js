@@ -78,17 +78,17 @@ function maintainSubject(event) {
   console.log(subjectFlag);
   audioAdd.play();
   if (!subjectFlag) {
-    createSubject();
+    createSubject(inputSubject.value);
   } else {
     let mainSubject = document.getElementById("mainSubject");
     mainSubject.textContent = inputSubject.value;
   }
 }
 
-function createSubject() {
+function createSubject(str) {
   console.log(inputSubject.value);
   let newSubject = document.createElement("div");
-  let newSubTxt = document.createTextNode(inputSubject.value);
+  let newSubTxt = document.createTextNode(str);
   newSubject.appendChild(newSubTxt);
   newSubject.setAttribute("id", "mainSubject");
   dragArea.insertBefore(newSubject, dragArea.firstChild);
@@ -170,6 +170,7 @@ function MakeBubbles(str, positiony, positionx, id) {
   // document.addEventListener("touchcancel", bubbleMouseUp);
 
   newBubble.addEventListener("mousemove", bubbleMouseMove);
+
   // newBubble.addEventListener("touchmove", bubbleMouseMove);
 
   //rapper for position
@@ -247,11 +248,24 @@ function endDrag(event) {
   let _y = event.clientY;
   event.target.style.left = _x + "px";
   event.target.style.top = _y + "px";
-  let id = event.target.closest(".thought");
-  let index = findBubble(id);
-  bubblesList[index].positionx = Math.round((_x / w) * 100);
-  bubblesList[index].positiony = Math.round((_y / h) * 100);
 }
+
+// function gettingCord(event) {
+//   let _x = event.clientX;
+//   let _y = event.clientY;
+//   let id = event.target.closest(".thought").id;
+
+//   bubblesList.forEach((v, i) => {
+//     if (v.id == id || v.task_client_id == id) {
+//       console.log(i);
+//       console.log(bubblesList);
+//       console.log(bubblesList[i]);
+//       console.log(bubblesList[i].positionx);
+//       bubblesList[i].positiony = Math.round((_y / h) * 100);
+//       bubblesList[i].positionx = Math.round((_x / w) * 100);
+//     }
+//   });
+// }
 
 function isEmpty(str) {
   if (str === "") {
@@ -269,7 +283,9 @@ function removeBubble(event) {
     idDiv = event.target.parentNode.getAttribute("data-objid");
   }
 
-  let index = bubblesList.findIndex((p) => p.id == idDiv);
+  let index =
+    bubblesList.findIndex((p) => p.id == idDiv) ||
+    bubblesList.findIndex((p) => p.task_client_id == idDiv);
   bubblesList[index]["hidden"] = true;
   let bubbleInDrag = document.getElementById(`${index}`);
   let bubbleInList = document.querySelector(`[data-objid="${index}"]`);
@@ -280,6 +296,7 @@ function removeBubble(event) {
 
 function completeTask(event) {
   audioFinish.play();
+  console.log(event.target);
   let idDiv = event.target.parentNode.getAttribute("id");
 
   if (idDiv === null) {
@@ -406,6 +423,16 @@ function bubbleMouseMove(event) {
     ele.style.left = mousePosition.x + offset[0] + "px";
     ele.style.top = mousePosition.y + offset[1] + "px";
   }
+  let _x = event.clientX;
+  let _y = event.clientY;
+  let id = event.target.closest(".thought").id;
+
+  bubblesList.forEach((v, i) => {
+    if (v.id == id || v.task_client_id == id) {
+      bubblesList[i].positiony = Math.round((_y / h) * 100);
+      bubblesList[i].positionx = Math.round((_x / w) * 100);
+    }
+  });
 }
 
 function dragStart(event) {
@@ -642,6 +669,71 @@ async function loadUserSubjects(id) {
   addSubjects(response);
 }
 
+async function loadTasks(e) {
+  let name = e.target.innerText;
+  let { user_id } = logged_user;
+  let sub_id = await fetch("http://localhost:5000/savesubject", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ name, user_id }),
+  }).then((res) => res.json());
+  // .catch(err=>console.log(err , "at subject id fetching")
+  console.log(sub_id, "all went ok");
+
+  let { subject_id } = sub_id;
+
+  let response = await fetch(`http://localhost:5000/tasks/${subject_id}`)
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+
+  displayTask(response);
+}
+
+function displayTask(data) {
+  let r = confirm(
+    "did you saved? this going to remove task and load from database are you sure?"
+  );
+  if (r) {
+    //delete all current apps
+    let allCurrentBubbles = document.querySelectorAll(".thought");
+    let allToDoListitems = document.querySelectorAll("#toDosList>div");
+    let allProcessitems = document.querySelectorAll("#toProcessList>div");
+
+    allCurrentBubbles.forEach((v) => v.remove());
+    allToDoListitems.forEach((v) => v.remove());
+    allProcessitems.forEach((v) => v.remove());
+
+    //build app again
+    bubblesList = data;
+    bubblesList.forEach((v) =>
+      MakeBubbles(v.head, v.positiony, v.positionx, v.task_client_id)
+    );
+  }
+}
+
+function displaySubject(e) {
+  if (!subjectFlag) {
+    createSubject(e.target.innerText);
+  } else {
+    let mainSubject = document.getElementById("mainSubject");
+    mainSubject.textContent = e.target.innerText;
+  }
+}
+
+function loadSubject(str) {
+  console.log(str);
+  let newSubject = document.createElement("div");
+  let newSubTxt = document.createTextNode(str);
+  newSubject.appendChild(newSubTxt);
+  newSubject.setAttribute("id", "mainSubject");
+  dragArea.insertBefore(newSubject, dragArea.firstChild);
+  subjectFlag = true;
+
+  // TODO: if logged in save subject
+}
+
 function addSubjects(data) {
   console.log(data);
   let navBarLinks = document.getElementById("navBarLinks");
@@ -650,6 +742,8 @@ function addSubjects(data) {
     newLi.classList.add("nav-item");
     let newA = document.createElement("a");
     newA.innerText = v.subject_name;
+    newA.addEventListener("click", loadTasks);
+    newA.addEventListener("click", displaySubject);
     newA.classList.add("nav-link");
     newA.classList.add("active");
     newA.style.color = "rgb(35,121,129)";

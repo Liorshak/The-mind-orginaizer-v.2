@@ -72,19 +72,19 @@ const insertNewSubject = async (subjectN, userID) => {
 
 const savingTasks = async (arr, subjectID) => {
   for (let task of arr) {
-    //testing if exsist
+    let taskID = task.id || task.task_client_id;
+    console.log(task, " i am the task id of each task");
     let taskObj = await db("tasks")
       .select("task_id")
       .where({ subject_id: subjectID })
-      .andWhere({ task_client_id: task.id })
+      .andWhere({ task_client_id: taskID })
       .catch((error) =>
-        console.log("error in retrieve task id i am in saving task")
+        console.log(error, "error in retrieve task id i am in saving task")
       );
 
     console.log(" what is my number", taskObj);
-    let { task_id: theTaskID } = taskObj;
 
-    if (theTaskID == 0) {
+    if (taskObj.length == 0) {
       // if exsist update
 
       // date_start:task.start_date,
@@ -104,18 +104,20 @@ const savingTasks = async (arr, subjectID) => {
         })
         .catch((error) => console.log(error, " err in new task saving"));
     } else {
-      console.log(task);
+      let taskHead = task.text || task.head;
+      let taskFinished = task.done || task.finished;
+      let taskStatus = task.type || task.status;
       db("tasks")
         .where({ subject_id: subjectID })
-        .andWhere({ task_client_id: task.id })
+        .andWhere({ task_client_id: taskID })
         .update({
-          head: task.text,
-          finished: task.done,
-          status: task.type,
+          head: taskHead,
+          finished: taskFinished,
+          status: taskStatus,
           priority: task.priority,
           positionx: Math.round(task.positionx),
           positiony: Math.round(task.positiony),
-          task_client_id: task.id,
+          task_client_id: taskID,
 
           // date_start:task.start_date,
           // date_end:task.end_date,
@@ -184,6 +186,12 @@ const getAllSubject = (user_id) => {
     .catch((err) => console.log(err));
 };
 
+const getAllTasks = (subject_id) => {
+  return db("tasks")
+    .where({ subject_id: subject_id })
+    .catch((err) => console.log(err));
+};
+
 module.exports = {
   checkRegistered,
   updateLoginDate,
@@ -194,4 +202,5 @@ module.exports = {
   savingTasks,
   savingConnection,
   getAllSubject,
+  getAllTasks,
 };
