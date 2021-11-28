@@ -25,13 +25,14 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <a class="navbar-brand" href="#"></a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul id=navBarLinks class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
                 <a class="nav-link active" href="#brainForm">Brainstorm</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link active" href="#organizer">Lists</a>
               </li>
+              
             </ul >
               <div id="signupNav" class="d-flex justify-content-center  m-0 ">
               <li class="nav-item"  onClick="displayLogin()">
@@ -106,14 +107,14 @@
 
 
 <!-- page 1 -->
-       <div class="mb-3">
-<input type="submit" class="me-5 " value="Save Work" id="save">       
+       <!-- <div class="mb-3">
+<input type="submit" class="me-5 " value="Save Work" id="save">        -->
 
        <form id="brainForm">
         <input type="text" id="inputItem" placeholder="Whats on your mind?">
         <input type="submit" id="addBtn" value="Add">
        </form>
-      </div>    
+      <!-- </div>     -->
         <!-- part 2: dragable area id="dragArea"-->
 
 
@@ -152,7 +153,11 @@
             </div>
         </div>
        </section>
-       <input type="submit" value="Save Work" id="save2"> 
+       <div id=downNotice>
+       <strong id= "errorSubject" class="bubble bubble-bottom-left hidden">Please set a subject to save </strong>
+       <strong id="errorloggin" class="bubble bubble-bottom-left hidden">Please log in to save</strong>
+       <input type="submit" value="Save Work" onClick="saving()" id="save2">
+      </div> 
 <!-- end of page 2 -->
     </section>
     <footer id=footer class="fixed-bottom">
