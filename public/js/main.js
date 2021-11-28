@@ -1,13 +1,31 @@
 // class Bubble (id, text, done, hidden, type, priority)
 let Bubble = class {
-  constructor(id, text, done, hidden, type, priority, connectedTo) {
+  constructor(
+    id,
+    text,
+    done,
+    hidden,
+    type,
+    priority,
+    followBy,
+    start_date,
+    end_date,
+    description,
+    positionx,
+    positiony
+  ) {
     this.id = id;
-    this.text = text;
+    this.text = text; // head
+    this.description = description;
     this.done = done;
     this.hidden = hidden;
-    this.type = type; // 0 = Bubble | 1 -ToDo | 2 - ToProcess | 3 - Deleted
+    this.type = type; // status // 0 = Bubble | 1 -ToDo | 2 - ToProcess | 3 - Deleted
     this.priority = priority;
-    this.connectedTo = [];
+    this.followBy = [];
+    this.start_date = start_date;
+    this.end_date = end_date;
+    this.positionx = positionx;
+    this.positiony = positiony;
   }
 };
 let bubblesList = [];
@@ -16,6 +34,14 @@ let isDown = false;
 let offset = [0, 0];
 let draggedElement;
 let arrayArrows = [];
+let subject_id;
+let regiCount = 0;
+let logiCount = 0;
+
+let logged_user = {
+  logged: false,
+  user_id: null,
+};
 
 // collect elements
 let brainForm = document.getElementById("brainForm");
@@ -25,6 +51,8 @@ let inputSubject = document.getElementById("inputSubject");
 let dragArea = document.getElementById("dragArea");
 let toDos = document.getElementById("toDos");
 let toProcess = document.getElementById("toProcess");
+var w = window.innerWidth;
+var h = window.innerHeight;
 
 let bubbleForConnect1 = null;
 let bubbleForConnect2 = null;
@@ -65,6 +93,8 @@ function createSubject() {
   newSubject.setAttribute("id", "mainSubject");
   dragArea.insertBefore(newSubject, dragArea.firstChild);
   subjectFlag = true;
+
+  // TODO: if logged in save subject
 }
 
 // part 2
@@ -79,17 +109,11 @@ function createBubble(event) {
     return;
   }
 
-  let newBubble = document.createElement("div");
-  let newTxt = document.createTextNode(inputItem.value);
-  newBubble.appendChild(newTxt);
-  newBubble.setAttribute("id", bubblesList.length);
-  //*********************** IMPROVING DRAGGING */
-  // newBubble.addEventListener("dragstart", startDrag);
-  // newBubble.addEventListener("dragend", endDrag);
-  newBubble.style.position = "absolute";
+  let randomX = Math.floor(Math.random() * w * 0.6);
+  let randomY = Math.floor(Math.random() * h * 0.78 * 0.75);
 
-  // create new object
-  newObj = new Bubble(
+  // create new object (id, text, done, hidden, type, priority, followBy, start_date,end_date,description,positionx,positiony)
+  let newObj = new Bubble(
     bubblesList.length,
     inputItem.value,
     false,
@@ -98,8 +122,23 @@ function createBubble(event) {
     1
   );
 
-  bubblesList.push(newObj);
+  newObj.positionx = Math.round((randomX / w) * 100); //in VW
+  newObj.positiony = Math.round((randomY / h) * 100); // in VH
 
+  bubblesList.push(newObj);
+  MakeBubbles(inputItem.value, newObj.positiony, newObj.positionx, newObj.id);
+  inputItem.value = "";
+}
+
+function MakeBubbles(str, positiony, positionx, id) {
+  let newBubble = document.createElement("div");
+  let newTxt = document.createTextNode(str);
+  newBubble.appendChild(newTxt);
+  newBubble.setAttribute("id", bubblesList.length);
+  //*********************** IMPROVING DRAGGING */
+  // newBubble.addEventListener("dragstart", startDrag);
+  // newBubble.addEventListener("dragend", endDrag);
+  newBubble.style.position = "absolute";
   newArrowBtn = document.createElement("button");
   newArrowTxt = document.createTextNode(">");
   newArrowBtn.appendChild(newArrowTxt);
@@ -109,10 +148,6 @@ function createBubble(event) {
   // make draggable true attribute
   // newBubble.setAttribute("draggable", "true");
   // newBubble.style.position = "absolute";
-  var w = window.innerWidth;
-  var h = window.innerHeight;
-  let randomX = Math.floor(Math.random() * w * 0.6);
-  let randomY = Math.floor(Math.random() * h * 0.78 * 0.75);
 
   //make style position x random
   // make style position y random
@@ -125,7 +160,7 @@ function createBubble(event) {
   newBubble.appendChild(newTxt);
 
   newBubble.appendChild(newArrowBtn);
-  addRadio(newBubble, "radios", newObj.id, "kind");
+  addRadio(newBubble, "radios", id, "kind");
 
   newBubble.addEventListener("mousedown", bubbleMouseDown);
   // newBubble.addEventListener("touchstart", bubbleMouseDown);
@@ -139,11 +174,9 @@ function createBubble(event) {
 
   //rapper for position
   newBubble.classList.add("thought");
-  newBubble.style.top = `${randomY}px`;
-  newBubble.style.left = `${randomX}px`;
+  newBubble.style.top = `${positiony}vh`;
+  newBubble.style.left = `${positionx}vw`;
   dragArea.appendChild(newBubble);
-
-  inputItem.value = "";
 }
 
 function addRadio(location, styleType, id, name) {
@@ -214,7 +247,10 @@ function endDrag(event) {
   let _y = event.clientY;
   event.target.style.left = _x + "px";
   event.target.style.top = _y + "px";
-  // event.target.style.position = "absolute";
+  let id = event.target.closest(".thought");
+  let index = findBubble(id);
+  bubblesList[index].positionx = Math.round((_x / w) * 100);
+  bubblesList[index].positiony = Math.round((_y / h) * 100);
 }
 
 function isEmpty(str) {
@@ -421,7 +457,7 @@ function arrowConnecting(event) {
 
     //need to add connection in memory
   }
-  findBubble(bubbleForConnect1).connectedTo.push(bubbleForConnect2);
+  findBubble(bubbleForConnect2).followBy.push(bubbleForConnect1);
   newArrowDraw = document.createElement("connection");
   newArrowDraw.setAttribute("from", bubbleForConnect1);
   newArrowDraw.setAttribute("to", bubbleForConnect2);
@@ -443,6 +479,224 @@ function removeArrow(event) {
 
   //need to remove connection from array
 }
+
+let mainSubjectId; //saving on the global
+
+async function saving() {
+  await getsubjectID();
+  await savingTasks();
+
+  console.log();
+}
+
+async function getsubjectID() {
+  let mainSubject = document.getElementById("mainSubject");
+
+  if (mainSubject != null) {
+    let name = mainSubject.innerText.toUpperCase();
+
+    if (logged_user.logged) {
+      let { user_id } = logged_user;
+
+      try {
+        let sub_id = await fetch("http://localhost:5000/savesubject", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({ name, user_id }),
+        }).then((res) => res.json());
+        // .catch(err=>console.log(err , "at subject id fetching")
+        console.log(sub_id, "all went ok");
+
+        let { subject_id } = sub_id[0];
+        mainSubjectId = subject_id;
+        console.log(subject_id, "this is the subject number");
+      } catch (err) {
+        console.log(err, "at getting subjectID ");
+      }
+    } else {
+      let errorloggin = document.getElementById("errorloggin");
+      errorloggin.classList.remove("hidden");
+      setTimeout(() => {
+        errorloggin.classList.add("hidden");
+      }, 2500);
+    }
+  } else {
+    let errorSubject = document.getElementById("errorSubject");
+    errorSubject.classList.remove("hidden");
+    setTimeout(() => {
+      errorSubject.classList.add("hidden");
+    }, 2500);
+  }
+}
+
+async function savingTasks() {
+  try {
+    let subject_id = mainSubjectId;
+    console.log(subject_id, "this is the subject number");
+    let savingDetail = await fetch("http://localhost:5000/save", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ bubblesList, subject_id }),
+    }).then((res) => res.json());
+
+    console.log(savingDetail);
+  } catch (err) {
+    console.log(err, "at saving ");
+  }
+}
+
+function successRegi() {
+  let username = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
+  let fName = document.getElementById("name").value;
+  let lName = document.getElementById("lName").value;
+  let email = document.getElementById("email").value;
+  let submitRegi = document.getElementById("submitRegi");
+  if (
+    username != "" &&
+    password != "" &&
+    lName != "" &&
+    email != "" &&
+    fName != ""
+  ) {
+    submitRegi.disabled = false;
+  } else {
+    submitRegi.disabled = true;
+  }
+}
+
+function successLogin() {
+  let usernameL = document.getElementById("username").value;
+  let passwordL = document.getElementById("password").value;
+  let submit = document.getElementById("submit");
+  if (username != "" && password != "") {
+    submitLogin.disabled = false;
+  } else {
+    submitLogin.disabled = true;
+  }
+}
+
+function register(event) {
+  event.preventDefault();
+  let username = document.getElementById("username").value.toLowerCase();
+  let password = document.getElementById("password").value;
+  let fName = document.getElementById("name").value.toLowerCase();
+  let lName = document.getElementById("lName").value.toLowerCase();
+  let email = document.getElementById("email").value.toLowerCase();
+  let register_info = document.getElementById("register_info");
+
+  fetch("http://localhost:5000/register", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ username, password, fName, lName, email }),
+  })
+    .then((res) => res.json())
+    .then((str) => {
+      console.log("sent request received detail");
+      register_info.innerText = str;
+    })
+    .catch((err) => console.log(err));
+}
+
+function login(event) {
+  event.preventDefault();
+  let username = document.getElementById("usernameL").value.toLowerCase();
+  let password = document.getElementById("passwordL").value;
+  let login_info = document.getElementById("login_info");
+  fetch("http://localhost:5000/login", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log("sent request received detail");
+      console.log(res);
+      logged_user.logged = true;
+      logged_user.user_id = res[1];
+      login_info.innerText = res[0];
+      loadUserSubjects(logged_user.user_id);
+
+      console.log(logged_user);
+    })
+    .catch((err) => {
+      console.log(err);
+      login_info.innerText =
+        "login information was not ok username or password not exist";
+    });
+}
+
+async function loadUserSubjects(id) {
+  let response = await fetch(`http://localhost:5000/subjects/${id}`)
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+
+  addSubjects(response);
+}
+
+function addSubjects(data) {
+  console.log(data);
+  let navBarLinks = document.getElementById("navBarLinks");
+  data.forEach((v) => {
+    let newLi = document.createElement("li");
+    newLi.classList.add("nav-item");
+    let newA = document.createElement("a");
+    newA.innerText = v.subject_name;
+    newA.classList.add("nav-link");
+    newA.classList.add("active");
+    newA.style.color = "rgb(35,121,129)";
+    newA.style.fontWeight = "bold";
+    newLi.appendChild(newA);
+    navBarLinks.appendChild(newLi);
+  });
+}
+
+function displayLogin() {
+  let login = document.getElementById("login");
+  let needToRegi = document.getElementById("needToRegi");
+  if (logiCount % 2 == 0) {
+    login.style.display = "block";
+    needToRegi.style.display = "block";
+    login.style.margin = "auto";
+    logiCount++;
+  } else {
+    login.style.display = "none";
+    needToRegi.style.display = "none";
+    logiCount++;
+  }
+}
+
+function displayRegister() {
+  let register = document.getElementById("register");
+  let needTologi = document.getElementById("needTologi");
+  if (regiCount % 2 == 0) {
+    register.style.display = "block";
+    needTologi.style.display = "block";
+    register.style.margin = "auto";
+    regiCount++;
+  } else {
+    register.style.display = "none";
+    needTologi.style.display = "none";
+    regiCount++;
+  }
+}
+
+function switchForm() {
+  displayLogin();
+  displayRegister();
+}
+
+// warning msg must be logged in
+
+//TODO: creating saving function
 
 // function exportToCsv(filename, rows) {
 //   let processRow = function (row) {
