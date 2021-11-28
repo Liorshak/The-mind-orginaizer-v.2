@@ -134,7 +134,7 @@ function MakeBubbles(str, positiony, positionx, id) {
   let newBubble = document.createElement("div");
   let newTxt = document.createTextNode(str);
   newBubble.appendChild(newTxt);
-  newBubble.setAttribute("id", bubblesList.length);
+  newBubble.setAttribute("id", id);
   //*********************** IMPROVING DRAGGING */
   // newBubble.addEventListener("dragstart", startDrag);
   // newBubble.addEventListener("dragend", endDrag);
@@ -263,7 +263,7 @@ function isEmpty(str) {
 
 function removeBubble(event) {
   audioDel.play();
-  let idDiv = event.target.parentNode.getAttribute("id");
+  let idDiv = event.target.closest(".thought").getAttribute("id");
 
   if (idDiv === null) {
     idDiv = event.target.parentNode.getAttribute("data-objid");
@@ -509,7 +509,7 @@ async function getsubjectID() {
         // .catch(err=>console.log(err , "at subject id fetching")
         console.log(sub_id, "all went ok");
 
-        let { subject_id } = sub_id[0];
+        let { subject_id } = sub_id;
         mainSubjectId = subject_id;
         console.log(subject_id, "this is the subject number");
       } catch (err) {

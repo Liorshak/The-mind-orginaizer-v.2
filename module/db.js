@@ -49,24 +49,24 @@ const retriveHashPass = async (userN) => {
 
 const insertNewSubject = async (subjectN, userID) => {
   console.log("information ", subjectN, userID);
+
   let subObj = await db("subjects")
-    .select("subject_id")
     .where({ owner_id: userID })
     .andWhere({ subject_name: subjectN })
     .catch((error) => console.log("error in the if", error));
 
-  if (subObj[0].subject_id > 0 && typeof subObj != undefined) {
-    console.log("look here", subObj);
+  console.log(subObj);
 
-    return subObj;
+  if (subObj.length > 0) {
+    console.log("look here", subObj);
+    return { subject_id: subObj[0].subject_id };
   } else {
     return db("subjects")
       .insert({
         subject_name: subjectN,
         owner_id: userID,
       })
-      .returning(["subject_id"])
-      .then((res) => console.log(res));
+      .returning(["subject_id"]);
   }
 };
 

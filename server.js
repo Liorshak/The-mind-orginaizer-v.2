@@ -25,31 +25,35 @@ let loggedUsers = [];
 app.post("/register", async (req, res) => {
   console.log("received request");
   console.log(req.body);
-
-  const hashPass = pword.hash(req.body.password, {
-    cost: 10,
-  });
-  console.log(hashPass);
-  let obj = await db
-    .registerUser(
-      req.body.fName,
-      req.body.lName,
-      req.body.email,
-      req.body.username,
-      hashPass
-    )
-    .catch((err) => {
-      res.json(err.detail);
+  try {
+    const hashPass = pword.hash(req.body.password, {
+      cost: 10,
     });
+    console.log(hashPass);
+    let obj = await db
+      .registerUser(
+        req.body.fName,
+        req.body.lName,
+        req.body.email,
+        req.body.username,
+        hashPass
+      )
+      .catch((err) => {
+        res.json(err.detail);
+      });
 
-  console.log(obj[0].user_id);
-  let addUser = await db
-    .addUserToLogin(obj[0].user_id, req.body.username, hashPass)
-    .catch((err) => {
-      res.json(err.detail);
-    });
-  console.log("Hello you account is now created!");
-  res.json(`OK Hello ${req.body.username} your ID is ${obj[0].user_id}`);
+    console.log(obj);
+
+    let addUser = await db
+      .addUserToLogin(obj[0].user_id, req.body.username, hashPass)
+      .catch((err) => {
+        res.json(err.detail);
+      });
+    console.log("Hello you account is now created!");
+    res.json(`OK Hello ${req.body.username} your ID is ${obj[0].user_id}`);
+  } catch (err) {
+    res.json(err.detail);
+  }
 });
 
 app.post("/login", async (req, res) => {
